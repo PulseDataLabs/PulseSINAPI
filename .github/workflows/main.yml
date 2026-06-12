@@ -1,0 +1,60 @@
+name: Coleta e Sincronizacao SINAPI
+
+on:
+  schedule:
+    # Executa todos os dias às 05:00 UTC (02:00 BRT)
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'data/**'
+      - 'backend/sinapi.db'
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Requerido para dar push de commits
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r backend/requirements.txt
+
+      - name: Run Scrapers Pipeline
+        run: |
+          python run_all.py
+
+      - name: Sync CSVs to SQLite Database
+        run: |
+          python scripts/sync_csv_to_db.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Adiciona apenas os arquivos de dados e banco de dados
+          git add data/
+          git add backend/sinapi.db
+          
+          # Verifica se existem alterações para commitar
+          if ! git diff --cached --quiet; then
+            git commit -m "auto: update SINAPI data and sqlite db [skip ci]"
+            git push origin main
+          else
+            echo "Nenhuma alteração nos dados detectada."
+          fi
