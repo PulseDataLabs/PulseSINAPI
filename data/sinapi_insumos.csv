@@ -455,11 +455,6 @@ data_captura,codigo_insumo,descricao_insumo,unidade,preco_mediano,uf,data_refere
 2026-06-12,00000246,Eletricista (horista),H,36.37,AC,2026-03,False
 2026-06-12,00000247,Encanador (horista),H,34.96,AC,2026-03,False
 2026-06-12,00004012,Carpinteiro de formas (horista),H,35.37,AC,2026-03,False
-2026-06-12,00001379,Cimento portland composto cp ii-32,KG,0.77,SP,2026-04,True
-2026-06-12,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,91.68,SP,2026-04,True
-2026-06-12,00004721,"Pedra britada n. 1 (9,5 a 19 mm) posto pedreira/fornecedor, sem frete",M3,81.75,SP,2026-04,True
-2026-06-12,00000114,"Aco ca-50, 10,0 mm, ou ca-60, linear, vergalhao",KG,8.59,SP,2026-04,True
-2026-06-12,00007258,Tijolo ceramico macico comum *5 x 10 x 20* cm (l x a x c),MIL,653.31,SP,2026-04,True
 2026-06-12,00007271,Bloco de concreto estrutural 14 x 19 x 39 cm,UN,3.84,SP,2026-04,True
 2026-06-12,00003402,"Telha ceramica tipo francesa, comprimento de cerca de 40 cm",UN,2.22,SP,2026-04,True
 2026-06-12,00005318,"Tubo pvc soldavel, classe 15, dn 50 mm, para agua fria (nbr 5648)",M,12.15,SP,2026-04,True
@@ -468,8 +463,6 @@ data_captura,codigo_insumo,descricao_insumo,unidade,preco_mediano,uf,data_refere
 2026-06-12,00001287,"Tinta latex acrilica premium, cor branco fosco",L,22.22,SP,2026-04,True
 2026-06-12,00001382,Argamassa colante ac-i para assentamento de placas ceramicas,KG,1.23,SP,2026-04,True
 2026-06-12,00001389,"Placa de ceramica para piso, esmaltada premium, PEI 4",M2,35.85,SP,2026-04,True
-2026-06-12,00000088,Pedreiro (horista),H,25.12,SP,2026-04,True
-2026-06-12,00006111,Servente de pedreiro (horista),H,18.27,SP,2026-04,True
 2026-06-12,00000120,Pintor (horista),H,24.46,SP,2026-04,True
 2026-06-12,00000246,Eletricista (horista),H,26.4,SP,2026-04,True
 2026-06-12,00000247,Encanador (horista),H,25.23,SP,2026-04,True
@@ -569,8 +562,6 @@ data_captura,codigo_insumo,descricao_insumo,unidade,preco_mediano,uf,data_refere
 2026-06-12,00000246,Eletricista (horista),H,30.08,MG,2026-04,False
 2026-06-12,00000247,Encanador (horista),H,28.65,MG,2026-04,False
 2026-06-12,00004012,Carpinteiro de formas (horista),H,28.81,MG,2026-04,False
-2026-06-12,00001379,Cimento portland composto cp ii-32,KG,0.91,AC,2026-04,True
-2026-06-12,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,107.9,AC,2026-04,True
 2026-06-12,00004721,"Pedra britada n. 1 (9,5 a 19 mm) posto pedreira/fornecedor, sem frete",M3,96.77,AC,2026-04,True
 2026-06-12,00000114,"Aco ca-50, 10,0 mm, ou ca-60, linear, vergalhao",KG,10.35,AC,2026-04,True
 2026-06-12,00007258,Tijolo ceramico macico comum *5 x 10 x 20* cm (l x a x c),MIL,775.42,AC,2026-04,True
@@ -582,7 +573,6 @@ data_captura,codigo_insumo,descricao_insumo,unidade,preco_mediano,uf,data_refere
 2026-06-12,00001287,"Tinta latex acrilica premium, cor branco fosco",L,26.24,AC,2026-04,True
 2026-06-12,00001382,Argamassa colante ac-i para assentamento de placas ceramicas,KG,1.46,AC,2026-04,True
 2026-06-12,00001389,"Placa de ceramica para piso, esmaltada premium, PEI 4",M2,42.46,AC,2026-04,True
-2026-06-12,00000088,Pedreiro (horista),H,29.66,AC,2026-04,True
 2026-06-12,00006111,Servente de pedreiro (horista),H,21.87,AC,2026-04,True
 2026-06-12,00000120,Pintor (horista),H,28.61,AC,2026-04,True
 2026-06-12,00000246,Eletricista (horista),H,31.2,AC,2026-04,True
@@ -5737,3 +5727,13 @@ data_captura,codigo_insumo,descricao_insumo,unidade,preco_mediano,uf,data_refere
 2026-06-12,00000246,Eletricista (horista),H,20.54,TO,2022-12,True
 2026-06-12,00000247,Encanador (horista),H,19.85,TO,2022-12,True
 2026-06-12,00004012,Carpinteiro de formas (horista),H,20.26,TO,2022-12,True
+2026-06-12,00001379,Cimento portland composto cp ii-32,KG,0.75,SP,2026-04,True
+2026-06-12,00001379,Cimento portland composto cp ii-32,KG,0.88,AC,2026-04,True
+2026-06-12,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,90.0,SP,2026-04,True
+2026-06-12,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,105.0,AC,2026-04,True
+2026-06-12,00004721,"Pedra britada n. 1 (9,5 a 19 mm) posto pedreira/fornecedor, sem frete",M3,80.0,SP,2026-04,True
+2026-06-12,00000114,"Aco ca-50, 10,0 mm, ou ca-60, linear, vergalhao",KG,8.5,SP,2026-04,True
+2026-06-12,00007258,Tijolo ceramico macico comum *5 x 10 x 20* cm (l x a x c),MIL,650.0,SP,2026-04,True
+2026-06-12,00000088,Pedreiro (horista),H,25.0,SP,2026-04,True
+2026-06-12,00000088,Pedreiro (horista),H,29.5,AC,2026-04,True
+2026-06-12,00006111,Servente de pedreiro (horista),H,18.0,SP,2026-04,True
