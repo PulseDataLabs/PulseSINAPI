@@ -1,0 +1,12 @@
+requests
+beautifulsoup4
+python-dotenv
+xlrd
+rich
+bizdays
+openpyxl
+PyYAML
+pytest
+requests-mock
+pandas
+curl-cffi

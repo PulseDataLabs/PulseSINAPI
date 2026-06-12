@@ -1,0 +1,10 @@
+{
+  "sinapi_composicoes.csv": {
+    "min": "2026-06-12",
+    "max": "2026-06-12"
+  },
+  "sinapi_insumos.csv": {
+    "min": "2015-12",
+    "max": "2026-04"
+  }
+}

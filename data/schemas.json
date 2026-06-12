@@ -1,0 +1,101 @@
+[
+  {
+    "title": "Sinapi Composicoes",
+    "files": "sinapi_composicoes.csv",
+    "source": "sinapi",
+    "fields": [
+      {
+        "name": "data_captura",
+        "type": "date",
+        "example": "2026-06-12"
+      },
+      {
+        "name": "codigo_composicao",
+        "type": "str",
+        "example": "00092210"
+      },
+      {
+        "name": "descricao_composicao",
+        "type": "str",
+        "example": "Pintura acrilica em paredes internas, duas demaos"
+      },
+      {
+        "name": "unidade_composicao",
+        "type": "str",
+        "example": "M2"
+      },
+      {
+        "name": "codigo_item",
+        "type": "str",
+        "example": "00001287"
+      },
+      {
+        "name": "descricao_item",
+        "type": "str",
+        "example": "Tinta latex acrilica premium, cor branco fosco"
+      },
+      {
+        "name": "unidade_item",
+        "type": "str",
+        "example": "L"
+      },
+      {
+        "name": "tipo_item",
+        "type": "str",
+        "example": "INSUMO"
+      },
+      {
+        "name": "coeficiente",
+        "type": "float",
+        "example": "0.35"
+      }
+    ]
+  },
+  {
+    "title": "Sinapi Insumos",
+    "files": "sinapi_insumos.csv",
+    "source": "sinapi",
+    "fields": [
+      {
+        "name": "data_captura",
+        "type": "date",
+        "example": "2026-06-12"
+      },
+      {
+        "name": "codigo_insumo",
+        "type": "str",
+        "example": "00001379"
+      },
+      {
+        "name": "descricao_insumo",
+        "type": "str",
+        "example": "Cimento portland composto cp ii-32"
+      },
+      {
+        "name": "unidade",
+        "type": "str",
+        "example": "KG"
+      },
+      {
+        "name": "preco_mediano",
+        "type": "float",
+        "example": "0.75"
+      },
+      {
+        "name": "uf",
+        "type": "str",
+        "example": "SP"
+      },
+      {
+        "name": "data_referencia",
+        "type": "date",
+        "example": "2026-01"
+      },
+      {
+        "name": "desonerado",
+        "type": "str",
+        "example": "True"
+      }
+    ]
+  }
+]

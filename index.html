@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PulseSINAPI — Inteligência em Custos da Construção Civil</title>
+  <meta name="description" content="Pipeline automatizado sobre o SINAPI/Caixa — preços de insumos e composições normalizados, histórico desde 2015 para todas as UFs." />
+  <meta property="og:title" content="PulseSINAPI — Inteligência em Custos da Construção Civil" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://pulsedatalabs.github.io/PulseSINAPI/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --bg-2:      #161b22;
+      --bg-3:      #21262d;
+      --border:    #30363d;
+      --border-2:  #21262d;
+      --text:      #e6edf3;
+      --text-2:    #8b949e;
+      --text-3:    #484f58;
+      --green:     #3fb950;
+      --green-dim: #238636;
+      --green-bg:  rgba(35,134,54,.15);
+      --accent:    #58a6ff;
+      --warn:      #d29922;
+      --warn-bg:   rgba(210,153,34,.12);
+      --red:       #f85149;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      font-size: 14px; line-height: 1.65;
+      color: var(--text); background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Ticker ── */
+    .ticker {
+      background: var(--bg-2); border-bottom: 1px solid var(--border-2);
+      overflow: hidden; height: 32px; display: flex; align-items: center;
+    }
+    .ticker-track {
+      display: flex; animation: ticker-scroll 50s linear infinite; white-space: nowrap;
+    }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 0 28px; font-family: var(--mono); font-size: 11px;
+      color: var(--text-2); border-right: 1px solid var(--border-2);
+    }
+    .ticker-item .lbl { color: var(--text-3); font-size: 10px; text-transform: uppercase; letter-spacing:.06em; }
+    .ticker-item .val { color: var(--text); font-weight: 600; }
+    .ticker-item .pos { color: var(--green); }
+    .ticker-item .neg { color: var(--red); }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(13,17,23,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 14px; font-weight: 600;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-logo:hover { text-decoration: none; }
+
+    .logo-icon {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--green-dim);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-icon svg { width: 18px; height: 18px; }
+
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a {
+      font-size: 13px; color: var(--text-2); padding: 4px 10px; border-radius: 6px;
+      transition: color .15s, background .15s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--bg-3); text-decoration: none; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+
+    .status-pill {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 11px; color: var(--text-2);
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 999px; padding: 4px 12px;
+    }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+      animation: pd 2s ease-in-out infinite;
+    }
+    @keyframes pd { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+    .pulse-dot.warn { background: var(--warn); }
+    .pulse-dot.err { background: var(--red); }
+
+    .btn-gh {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 500; color: var(--text);
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 6px; padding: 5px 12px;
+      transition: background .15s; text-decoration: none;
+    }
+    .btn-gh:hover { background: #30363d; border-color: #8b949e; text-decoration: none; }
+    .btn-gh svg { width: 14px; height: 14px; fill: currentColor; }
+
+    /* ── Hero ── */
+    .hero-wrap { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
+    .hero-grid-bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border-2) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-2) 1px, transparent 1px);
+      background-size: 48px 48px; opacity: .45;
+    }
+    .hero-glow {
+      position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(63,185,80,.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero {
+      position: relative; max-width: 720px; margin: 0 auto;
+      padding: 5rem 24px 4rem; text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 11px; letter-spacing:.04em;
+      color: var(--green); background: var(--green-bg);
+      border: 1px solid rgba(63,185,80,.3);
+      border-radius: 999px; padding: 4px 14px; margin-bottom: 1.75rem;
+    }
+    .hero h1 {
+      font-family: var(--mono); font-size: clamp(2rem,5vw,2.75rem);
+      font-weight: 600; letter-spacing: -.02em; line-height: 1.15;
+      color: var(--text); margin-bottom: .75rem;
+    }
+    .hero h1 .accent { color: var(--green); }
+    .hero-tagline {
+      font-size: 13px; font-family: var(--mono); color: var(--green);
+      margin-bottom: 1rem; letter-spacing: .02em;
+    }
+    .hero-sub {
+      font-size: 15px; color: var(--text-2);
+      max-width: 560px; margin: 0 auto 2rem; line-height: 1.7;
+    }
+    .hero-actions { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600; color: #fff;
+      background: var(--green-dim); border: 1px solid var(--green-dim);
+      border-radius: 6px; padding: 8px 20px; transition: background .15s; text-decoration: none;
+    }
+    .btn-primary:hover { background: #2ea043; color: #fff; text-decoration: none; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 500; color: var(--text-2);
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 8px 20px; transition: background .15s, color .15s; text-decoration: none;
+    }
+    .btn-outline:hover { background: var(--bg-3); color: var(--text); text-decoration: none; }
+
+    /* ── Stats ── */
+    .stats { background: var(--bg-2); border-bottom: 1px solid var(--border); }
+    .stats-inner {
+      max-width: 960px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4,1fr);
+    }
+    .stat { padding: 1.5rem 1.25rem; border-right: 1px solid var(--border); text-align: center; }
+    .stat:last-child { border-right: none; }
+    .stat-val {
+      display: block; font-family: var(--mono);
+      font-size: 1.75rem; font-weight: 600;
+      color: var(--green); letter-spacing: -.03em;
+    }
+    .stat-lbl { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing:.07em; margin-top: 3px; }
+
+    /* ── Sections ── */
+    section { padding: 4rem 24px; }
+    section + section { border-top: 1px solid var(--border); }
+    .section-inner { max-width: 960px; margin: 0 auto; }
+    .eyebrow {
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      color: var(--green); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .5rem;
+    }
+    .section-title { font-size: 1.375rem; font-weight: 700; color: var(--text); letter-spacing: -.02em; margin-bottom: .5rem; }
+    .section-sub { font-size: 14px; color: var(--text-2); max-width: 560px; line-height: 1.65; margin-bottom: 2rem; }
+
+    /* ── Sobre ── */
+    .sobre-grid {
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    @media (max-width:620px) { .sobre-grid { grid-template-columns: 1fr; } }
+    .sobre-card { background: var(--bg-2); padding: 1.5rem; transition: background .1s; }
+    .sobre-card:hover { background: var(--bg-3); }
+    .sc-emoji { font-size: 20px; margin-bottom: .75rem; display: block; }
+    .sobre-card h3 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: .35rem; }
+    .sobre-card p  { font-size: 13px; color: var(--text-2); line-height: 1.55; }
+
+    .sobre-card.warn-card { border-top: 2px solid var(--warn); }
+    .sobre-card.warn-card h3 { color: var(--warn); }
+
+    /* ── Pipeline ── */
+    .pipeline-list { display: flex; flex-direction: column; }
+    .pipeline-step {
+      display: grid; grid-template-columns: 48px 1fr;
+      gap: 1rem; align-items: flex-start;
+      padding: 1.25rem 0; border-bottom: 1px solid var(--border-2);
+    }
+    .pipeline-step:last-child { border-bottom: none; }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--green-bg); border: 1px solid rgba(63,185,80,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
+      color: var(--green); flex-shrink: 0; margin-top: 2px;
+    }
+    .step-body h3 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: .25rem; }
+    .step-body p  { font-size: 13px; color: var(--text-2); line-height: 1.55; }
+    .tag {
+      display: inline-block; margin-top: .5rem;
+      font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .04em;
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 4px; padding: 2px 7px; color: var(--text-3);
+    }
+
+    /* ── Datasets ── */
+    .table-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); text-align: left;
+      padding: .6rem 1rem; background: var(--bg-3); border-bottom: 1px solid var(--border);
+    }
+    tbody tr { border-bottom: 1px solid var(--border-2); transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-3); }
+    td { padding: .7rem 1rem; font-size: 13px; vertical-align: middle; }
+    .ds-name { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text); }
+    .ds-path { font-family: var(--mono); font-size: 10px; color: var(--text-3); margin-top: 2px; }
+    .ds-desc { color: var(--text-2); }
+    .ds-freq {
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      background: var(--green-bg); color: var(--green);
+      border: 1px solid rgba(63,185,80,.25); border-radius: 4px; padding: 2px 7px; white-space: nowrap;
+    }
+    .ds-src { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+    .dl-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      color: var(--green); background: var(--green-bg);
+      border: 1px solid rgba(63,185,80,.25); border-radius: 4px; padding: 4px 10px;
+      cursor: pointer; transition: all .15s; white-space: nowrap; text-decoration: none;
+    }
+    .dl-btn:hover { background: rgba(35,134,54,.3); text-decoration: none; }
+
+    /* ── Schema ── */
+    .schema-tabs {
+      display: flex; gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: 8px 8px 0 0; overflow: hidden;
+    }
+    .schema-tab {
+      flex: 1; text-align: center;
+      font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--text-3);
+      background: var(--bg-2); padding: .65rem 1rem; cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .schema-tab:hover { color: var(--text-2); background: var(--bg-3); }
+    .schema-tab.active { color: var(--green); background: var(--bg-3); }
+    .schema-panel { display: none; }
+    .schema-panel.active { display: block; }
+    .schema-wrap {
+      border: 1px solid var(--border); border-top: none;
+      border-radius: 0 0 8px 8px; overflow: hidden;
+    }
+    .col-field { font-family: var(--mono); font-size: 12px; color: var(--green); font-weight: 600; }
+    .col-type  { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+    .col-desc  { font-size: 13px; color: var(--text-2); }
+
+    /* ── Setup ── */
+    .setup-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
+    .setup-step {
+      display: grid; grid-template-columns: 40px 1fr;
+      gap: 1rem; align-items: flex-start;
+      padding: 1rem 1.25rem; background: var(--bg-2);
+      border-bottom: 1px solid var(--border-2);
+    }
+    .setup-step:last-child { border-bottom: none; }
+    .ss-n {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--green-dim); color: #fff;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+    }
+    .ss-body h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: .2rem; }
+    .ss-body p  { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+    code {
+      font-family: var(--mono); font-size: 11px;
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 3px; padding: 1px 5px; color: var(--text);
+    }
+    .code-block { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .code-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-3); padding: .5rem 1rem; border-bottom: 1px solid var(--border);
+    }
+    .code-lang { font-family: var(--mono); font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
+    .code-copy { font-family: var(--mono); font-size: 11px; color: var(--text-3); background: none; border: none; cursor: pointer; transition: color .15s; }
+    .code-copy:hover { color: var(--green); }
+    pre {
+      margin: 0; padding: 1.25rem 1rem; background: var(--bg-2);
+      font-family: var(--mono); font-size: 12px; line-height: 1.75;
+      color: #c9d1d9; overflow-x: auto;
+    }
+    .cm { color: #484f58; }
+    .ck { color: var(--green); }
+    .cs { color: #a5d6ff; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border); background: var(--bg-2);
+      padding: 1.5rem 24px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-l { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+    .footer-l a { color: var(--text-2); }
+    .footer-l a:hover { color: var(--green); }
+    .footer-links { display: flex; gap: 1.25rem; list-style: none; }
+    .footer-links a { font-size: 12px; color: var(--text-3); }
+    .footer-links a:hover { color: var(--green); text-decoration: none; }
+
+    @media (max-width:720px) {
+      .nav-links { display: none; }
+      .stats-inner { grid-template-columns: repeat(2,1fr); }
+      .stat { border-bottom: 1px solid var(--border); }
+      section { padding: 2.5rem 16px; }
+      .hero { padding: 3rem 16px 2.5rem; }
+      nav { padding: 0 16px; }
+      .schema-tab { font-size: 10px; padding: .5rem .4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Ticker -->
+<div class="ticker">
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <a class="nav-logo" href="#">
+    <span class="logo-icon">
+      <!-- Ícone: engrenagem e bloco de construção -->
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2L2 6.5H18L10 2Z" fill="rgba(255,255,255,0.9)"/>
+        <rect x="2" y="15.5" width="16" height="2" rx=".5" fill="rgba(255,255,255,0.9)"/>
+        <rect x="4" y="8" width="5" height="6" rx=".5" fill="rgba(255,255,255,0.75)"/>
+        <rect x="11" y="8" width="5" height="6" rx=".5" fill="rgba(255,255,255,0.75)"/>
+        <line x1="6.5" y1="5.5" x2="6.5" y2="13.5" stroke="#3fb950" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13.5" y1="5.5" x2="13.5" y2="13.5" stroke="#3fb950" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </span>
+    PulseSINAPI
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#como-funciona">Pipeline</a></li>
+    <li><a href="#datasets">Datasets</a></li>
+    <li><a href="#schema">Schema</a></li>
+    <li><a href="#setup">Instalação</a></li>
+    <li><a href="consulta.html">Consulta</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <span class="status-pill" id="nav-status">
+      <span class="pulse-dot" id="nav-dot"></span>
+      <span id="nav-status-text">Carregando…</span>
+    </span>
+    <a class="btn-gh" href="https://github.com/PulseDataLabs/PulseSINAPI" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub ↗
+    </a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero-wrap">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero">
+    <div class="hero-badge">Caixa · SINAPI · Insumos · Composições · 27 UFs · desde 2015</div>
+    <h1>Pulse<span class="accent">SINAPI</span></h1>
+    <p class="hero-tagline">// Inteligência em Custos da Construção Civil</p>
+    <p class="hero-sub">
+      Preços de insumos, materiais, mão de obra e fichas técnicas de composições estruturadas e consolidadas
+      via pipeline de dados automático. Prontos para BI, simulações ou download imediato.
+    </p>
+    <div class="hero-actions">
+      <a href="#datasets" class="btn-primary">Explorar datasets</a>
+      <a href="consulta.html" class="btn-outline">Consultar Dados</a>
+      <a href="https://github.com/PulseDataLabs/PulseSINAPI" class="btn-outline" target="_blank" rel="noopener">Ver no GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat"><span class="stat-val">27</span><span class="stat-lbl">Estados Cobertos (UFs)</span></div>
+    <div class="stat"><span class="stat-val">2015</span><span class="stat-lbl">Início da Série Histórica</span></div>
+    <div class="stat"><span class="stat-val">Mensal</span><span class="stat-lbl">Frequência de Atualização</span></div>
+    <div class="stat"><span class="stat-val">SQLite + CSV</span><span class="stat-lbl">Formatos de Distribuição</span></div>
+  </div>
+</div>
+
+<!-- Sobre -->
+<section id="sobre">
+  <div class="section-inner">
+    <div class="eyebrow">Sobre</div>
+    <h2 class="section-title">Por que PulseSINAPI?</h2>
+    <p class="section-sub">O SINAPI da Caixa é público, mas os dados estão ocultos em milhares de planilhas zipadas com layouts instáveis. O PulseSINAPI unifica e consolida essas informações.</p>
+
+    <div class="sobre-grid">
+      <div class="sobre-card">
+        <span class="sc-emoji">📦</span>
+        <h3>Série histórica consolidada (10+ anos)</h3>
+        <p>Preços medianos de insumos e mão de obra de 2015 a 2026 em uma única base de dados de alta performance.</p>
+      </div>
+      <div class="sobre-card">
+        <span class="sc-emoji">🛠️</span>
+        <h3>Códigos padronizados em 8 dígitos</h3>
+        <p>Códigos numéricos limpos (ex: <code>00001379</code>) preenchidos com zeros à esquerda para garantir joins e chaves consistentes.</p>
+      </div>
+      <div class="sobre-card">
+        <span class="sc-emoji">📊</span>
+        <h3>Mapeamento de Composições de Custos</h3>
+        <p>Coeficientes de consumo de materiais e mão de obra para cada tipo de serviço, permitindo cálculo recursivo de orçamentos.</p>
+      </div>
+      <div class="sobre-card">
+        <span class="sc-emoji">🛡️</span>
+        <h3>Resiliência a bloqueios (HTTP 403/429)</h3>
+        <p>Pipeline robusto de download com curl-cffi (impersonate Chrome) e gerador de contingência determinístico integrado.</p>
+      </div>
+      <div class="sobre-card warn-card">
+        <span class="sc-emoji">⚠️</span>
+        <h3>Limitação: downloads legados da Caixa</h3>
+        <p>A Caixa alterou a estrutura de links a partir de 2025. Arquivos de 2024 e anteriores são descobertos dinamicamente via REST API do SharePoint.</p>
+      </div>
+      <div class="sobre-card warn-card">
+        <span class="sc-emoji">🔄</span>
+        <h3>Tabelas Desoneradas vs Não-Desoneradas</h3>
+        <p>Tabelas históricas com e sem desoneração de encargos sociais sobre a folha de pagamento da mão de obra (horista).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pipeline -->
+<section id="como-funciona">
+  <div class="section-inner">
+    <div class="eyebrow">Pipeline</div>
+    <h2 class="section-title">Como funciona o fluxo</h2>
+    <p class="section-sub">Pipeline estruturado em Python que descobre, baixa, limpa e sincroniza dados das planilhas mensais do SINAPI.</p>
+
+    <div class="pipeline-list">
+      <div class="pipeline-step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h3>Detecção de novos relatórios</h3>
+          <p>O scraper monitora o site da Caixa em busca de novas planilhas publicadas para o ano corrente, rodando via automação agendada.</p>
+          <span class="tag">sinapi_insumos.py · Caixa Scraping</span>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h3>Download resiliente e extração</h3>
+          <p>Fórmulas de download com cabeçalhos realistas baixam os arquivos ZIP e extraem as planilhas xlsx e xls em diretórios de cache temporários.</p>
+          <span class="tag">ZIP extraction · curl_cffi</span>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h3>Limpeza estrutural de planilhas</h3>
+          <p>Desloca cabeçalhos vazios, identifica as colunas corretas de código, descrição, unidade e preços medianos de forma adaptativa.</p>
+          <span class="tag">pandas · Excel parser</span>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <h3>Deduplicação incremental e gravação CSV</h3>
+          <p>As novas linhas são combinadas com as tabelas flat já existentes e gravadas com deduplicação rigorosa baseada em chaves compostas.</p>
+          <span class="tag">salvar_csv · deduplication</span>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <h3>Sincronização SQLite em lote</h3>
+          <p>Sincronização de altíssima velocidade (bulk insert mappings) com o banco de dados relacional <code>sinapi.db</code> para consumo da API FastAPI.</p>
+          <span class="tag">sync_csv_to_db.py · SQLite bulk</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Datasets -->
+<section id="datasets">
+  <div class="section-inner">
+    <div class="eyebrow">Downloads</div>
+    <h2 class="section-title">Datasets de Distribuição Flat</h2>
+    <p class="section-sub">Bases flat CSV compiladas pelo pipeline. Atualizadas periodicamente e versionadas.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Dataset</th>
+            <th>Descrição</th>
+            <th>Frequência</th>
+            <th>Fonte</th>
+            <th>Download</th>
+          </tr>
+        </thead>
+        <tbody id="ds-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Schema -->
+<section id="schema">
+  <div class="section-inner">
+    <div class="eyebrow">Schema</div>
+    <h2 class="section-title">Dicionário de dados</h2>
+    <p class="section-sub">Estrutura das tabelas CSV compiladas (UTF-8, ponto decimal, datas YYYY-MM-DD).</p>
+
+    <div class="schema-tabs">
+      <div class="schema-tab active" onclick="switchSchema('insumos',this)">Insumos (Preços)</div>
+      <div class="schema-tab" onclick="switchSchema('composicoes',this)">Composições</div>
+    </div>
+    <div class="schema-wrap">
+      <div id="schema-insumos" class="schema-panel active">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr></thead>
+          <tbody>
+            <tr><td class="col-field">data_captura</td><td class="col-type">datetime</td><td class="col-desc">Data e hora do processamento do registro</td></tr>
+            <tr><td class="col-field">codigo_insumo</td><td class="col-type">string</td><td class="col-desc">Código único de 8 dígitos do insumo (ex: 00001379)</td></tr>
+            <tr><td class="col-field">descricao_insumo</td><td class="col-type">string</td><td class="col-desc">Descrição completa do material ou serviço de mão de obra</td></tr>
+            <tr><td class="col-field">unidade</td><td class="col-type">string</td><td class="col-desc">Unidade de medida (KG, M3, H, UN, etc.)</td></tr>
+            <tr><td class="col-field">preco_mediano</td><td class="col-type">float</td><td class="col-desc">Valor mediano cobrado pelo insumo naquele estado/período (R$)</td></tr>
+            <tr><td class="col-field">uf</td><td class="col-type">string</td><td class="col-desc">Sigla do estado brasileiro de referência (ex: SP, AC, RJ)</td></tr>
+            <tr><td class="col-field">data_referencia</td><td class="col-type">string</td><td class="col-desc">Mês e ano da referência no formato YYYY-MM</td></tr>
+            <tr><td class="col-field">desonerado</td><td class="col-type">boolean</td><td class="col-desc">Indica se a tabela considera desoneração de encargos sociais (True/False)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="schema-composicoes" class="schema-panel">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr></thead>
+          <tbody>
+            <tr><td class="col-field">data_captura</td><td class="col-type">datetime</td><td class="col-desc">Data e hora do processamento do registro</td></tr>
+            <tr><td class="col-field">codigo_composicao</td><td class="col-type">string</td><td class="col-desc">Código único de 8 dígitos da composição principal (ex: 00088316)</td></tr>
+            <tr><td class="col-field">descricao_composicao</td><td class="col-type">string</td><td class="col-desc">Descrição do serviço composto de engenharia civil</td></tr>
+            <tr><td class="col-field">unidade_composicao</td><td class="col-type">string</td><td class="col-desc">Unidade de medida da composição (M3, M2, UN, etc.)</td></tr>
+            <tr><td class="col-field">codigo_item</td><td class="col-type">string</td><td class="col-desc">Código do item constituinte (seja insumo ou subcomposição)</td></tr>
+            <tr><td class="col-field">descricao_item</td><td class="col-type">string</td><td class="col-desc">Descrição do item constituinte</td></tr>
+            <tr><td class="col-field">unidade_item</td><td class="col-type">string</td><td class="col-desc">Unidade de medida do item constituinte</td></tr>
+            <tr><td class="col-field">tipo_item</td><td class="col-type">string</td><td class="col-desc">Tipo de item: INSUMO ou COMPOSICAO</td></tr>
+            <tr><td class="col-field">coeficiente</td><td class="col-type">float</td><td class="col-desc">Coeficiente/consumo do item para produzir uma unidade da composição</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Setup -->
+<section id="setup">
+  <div class="section-inner">
+    <div class="eyebrow">Instalação</div>
+    <h2 class="section-title">Como rodar o projeto localmente</h2>
+    <p class="section-sub">Clone, configure e execute os scripts de automação do SINAPI.</p>
+
+    <div class="setup-list">
+      <div class="setup-step">
+        <div class="ss-n">1</div>
+        <div class="ss-body">
+          <h4>Clone o repositório</h4>
+          <p><code>git clone https://github.com/PulseDataLabs/PulseSINAPI.git</code></p>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="ss-n">2</div>
+        <div class="ss-body">
+          <h4>Instale dependências Python</h4>
+          <p>Instale os requerimentos do pipeline: <code>pip install -r requirements.txt</code></p>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="ss-n">3</div>
+        <div class="ss-body">
+          <h4>Rode o pipeline flat</h4>
+          <p>Colete dados novos rodando <code>python run_all.py</code> ou importe dados históricos com <code>python scripts/import_historical_caixa.py --all-ufs --month 2023-12</code></p>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="ss-n">4</div>
+        <div class="ss-body">
+          <h4>Rode o painel web interativo</h4>
+          <p>Digite <code>python run.py</code> para inicializar o dashboard localmente (API FastAPI + React SPA).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-hd">
+        <span class="code-lang">terminal</span>
+        <button class="code-copy" onclick="copyCode(this)">copiar</button>
+      </div>
+      <pre id="setup-code"><span class="cm"># Clone e entre na pasta</span>
+<span class="ck">git clone</span> https://github.com/PulseDataLabs/PulseSINAPI.git
+<span class="ck">cd</span> PulseSINAPI
+
+<span class="cm"># Instale dependências</span>
+<span class="ck">pip install</span> -r requirements.txt
+
+<span class="cm"># Execute o pipeline e colete</span>
+<span class="ck">python</span> run_all.py
+
+<span class="cm"># Sincronize com o banco e inicialize app local</span>
+<span class="ck">python</span> run.py</pre>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-l">
+    <span>© 2026 <a href="https://pulsedatalabs.github.io">PulseDataLabs</a></span>
+    <span style="color:var(--border)">·</span>
+    <span>Dados públicos do <a href="https://www.caixa.gov.br/" target="_blank" rel="noopener">SINAPI/Caixa</a> — ODbL · Código MIT</span>
+  </div>
+  <ul class="footer-links">
+    <li><a href="https://pulsedatalabs.github.io/PulseFlat/">PulseFlat</a></li>
+    <li><a href="https://pulsedatalabs.github.io/PulseIFData/">PulseIFData</a></li>
+    <li><a href="https://github.com/PulseDataLabs/PulseSINAPI" target="_blank" rel="noopener">GitHub</a></li>
+  </ul>
+</footer>
+
+<script>
+/* ── Ticker ── */
+const TICKS = [
+  { lbl:'SINAPI · Coleta de preços', val:'UF/Mensal', cls:'' },
+  { lbl:'Estados cobertos', val:'27', cls:'pos' },
+  { lbl:'Série histórica desde', val:'2015', cls:'pos' },
+  { lbl:'Deduplicação de base', val:'Chave Composta', cls:'' },
+  { lbl:'Normalização de Códigos', val:'8 dígitos', cls:'pos' },
+  { lbl:'Tabelas desoneradas', val:'Disponíveis', cls:'' },
+  { lbl:'Mão de obra horista', val:'Atualizada', cls:'pos' },
+  { lbl:'Composições', val:'Breakdown Completo', cls:'' },
+  { lbl:'Formato flat', val:'CSV UTF-8', cls:'' },
+  { lbl:'Banco relacional', val:'SQLite', cls:'pos' },
+  { lbl:'Orquestração', val:'Automática', cls:'' },
+];
+const track = document.getElementById('ticker-track');
+const html = TICKS.map(t =>
+  `<span class="ticker-item"><span class="lbl">${t.lbl}</span><span class="val ${t.cls}">${t.val}</span></span>`
+).join('');
+track.innerHTML = html + html;
+
+/* ── Pipeline status ── */
+const navDot  = document.getElementById('nav-dot');
+const navText = document.getElementById('nav-status-text');
+
+(async () => {
+  try {
+    const r = await fetch('data/pipeline_status.json?t=' + Date.now());
+    if (r.ok) {
+      const st = await r.json();
+      const s = st.status;
+      navDot.className = 'pulse-dot ' + (s==='success'?'ok': s==='warning'?'warn':'err');
+      const ok = st.summary?.success ?? 0;
+      navText.textContent = s==='success'
+        ? `Pipeline ok · ${ok} scrapers`
+        : `Pipeline aviso/erro`;
+    } else { throw new Error(); }
+  } catch {
+    navText.textContent = 'Pipeline offline';
+    navDot.className = 'pulse-dot';
+  }
+})();
+
+/* ── Datasets ── */
+const BASE_URL = 'data/';
+const DS = [
+  {
+    name: 'sinapi_insumos.csv',
+    path: 'sinapi_insumos.csv',
+    desc: 'Série histórica consolidada de preços de insumos (materiais e mão de obra) por estado (UF), mês e desoneração.',
+    freq: 'Mensal', src: 'SINAPI', cat: 'insumos'
+  },
+  {
+    name: 'sinapi_composicoes.csv',
+    path: 'sinapi_composicoes.csv',
+    desc: 'Detalhamento de composições de serviços (itens constituintes, coeficientes e tipos de item).',
+    freq: 'Mensal', src: 'SINAPI', cat: 'composicoes'
+  }
+];
+
+document.getElementById('ds-body').innerHTML = DS.map(d => `
+  <tr>
+    <td>
+      <div class="ds-name">${d.name}</div>
+      <div class="ds-path">data/${d.path}</div>
+    </td>
+    <td><span class="ds-desc">${d.desc}</span></td>
+    <td><span class="ds-freq">${d.freq}</span></td>
+    <td><span class="ds-src">${d.src}</span></td>
+    <td><a class="dl-btn" href="${BASE_URL}${d.path}" target="_blank" rel="noopener">↓ Download</a></td>
+  </tr>`).join('');
+
+/* ── Schema tabs ── */
+function switchSchema(id, el) {
+  document.querySelectorAll('.schema-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.schema-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('schema-' + id).classList.add('active');
+}
+
+/* ── Copy code ── */
+function copyCode(btn) {
+  navigator.clipboard.writeText(document.getElementById('setup-code').innerText).then(() => {
+    btn.textContent = 'copiado ✓';
+    setTimeout(() => btn.textContent = 'copiar', 2000);
+  });
+}
+</script>
+</body>
+</html>

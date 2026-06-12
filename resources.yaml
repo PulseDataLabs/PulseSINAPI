@@ -1,0 +1,9 @@
+resources:
+  ##############################################################################
+  # Bases SINAPI - Tabelas Mensais de Insumos e Custos de Composições
+  ##############################################################################
+  - name: SINAPI - Relatórios Mensais
+    url: 'https://www.caixa.gov.br/Downloads/sinapi-relatorios-mensais/SINAPI-YYYY-MM-formato-xlsx.zip'
+    file_name: 'sinapi_relatorios_mensais.zip'
+    type_response: zip
+    acumular: false

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PulseSINAPI — Consulta</title>
+  <meta name="description" content="Consulte o banco do SINAPI: insumos, preços medianos, mão de obra e composições." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/select/3.1.3/css/select.dataTables.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #0d1117;
+      --bg-2:      #161b22;
+      --bg-3:      #21262d;
+      --border:    #30363d;
+      --border-2:  #21262d;
+      --text:      #e6edf3;
+      --text-2:    #8b949e;
+      --text-3:    #484f58;
+      --green:     #3fb950;
+      --green-dim: #238636;
+      --green-bg:  rgba(35,134,54,.15);
+      --accent:    #58a6ff;
+      --warn:      #d29922;
+      --warn-bg:   rgba(210,153,34,.12);
+      --red:       #f85149;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Inter', system-ui, sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans); font-size: 14px; line-height: 1.65;
+      color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(13,17,23,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 14px; font-weight: 600;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-logo:hover { text-decoration: none; }
+    .logo-icon {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--green-dim);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .logo-icon svg { width: 18px; height: 18px; }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a {
+      font-size: 13px; color: var(--text-2); padding: 4px 10px; border-radius: 6px;
+      transition: color .15s, background .15s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--bg-3); text-decoration: none; }
+    .nav-links a.active { color: var(--green); background: var(--green-bg); }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 2rem 24px; }
+    .page-title { margin-bottom: 1.5rem; }
+    .page-title h1 {
+      font-family: var(--mono); font-size: 1.5rem; font-weight: 600;
+      color: var(--text); letter-spacing: -.02em;
+    }
+    .page-title h1 .accent { color: var(--green); }
+    .page-title p { color: var(--text-2); font-size: 13px; margin-top: .25rem; }
+
+    .filters {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;
+      margin-bottom: 1.5rem; padding: 1rem 1.25rem;
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .filter-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 160px; }
+    .filter-group-wide { flex: 2.5; min-width: 320px; }
+    .filter-group-narrow { flex: 0 0 110px; min-width: 110px; }
+    .filter-group-short { flex: 0 0 130px; min-width: 130px; }
+    .filter-group label {
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      color: var(--text-3); text-transform: uppercase; letter-spacing: .08em;
+    }
+    .filter-group input, .filter-group select {
+      font-family: var(--mono); font-size: 13px; color: var(--text);
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 6px; padding: 6px 10px; width: 100%;
+    }
+    .filter-group input:focus, .filter-group select:focus {
+      outline: none; border-color: var(--green); box-shadow: 0 0 0 2px var(--green-bg);
+    }
+    .filter-actions { display: flex; gap: 6px; align-items: flex-end; }
+    .btn {
+      font-family: var(--mono); font-size: 12px; font-weight: 600;
+      border-radius: 6px; padding: 7px 14px; border: none; cursor: pointer;
+      transition: all .15s; white-space: nowrap;
+    }
+    .btn-primary { color: #fff; background: var(--green-dim); }
+    .btn-primary:hover { background: #2ea043; }
+    .btn-outline { color: var(--text-2); background: var(--bg-3); border: 1px solid var(--border); }
+    .btn-outline:hover { color: var(--text); background: var(--bg-3); border-color: var(--text-3); }
+
+    .table-wrap {
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      background: var(--bg-2);
+    }
+    #tabela-dados { width: 100% !important; }
+    #tabela-dados thead th {
+      font-family: var(--mono); font-size: 10px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); text-align: left;
+      padding: .6rem .75rem; background: var(--bg-3); border-bottom: 1px solid var(--border);
+    }
+    #tabela-dados tbody td {
+      padding: .5rem .75rem; font-size: 12px; vertical-align: middle;
+      border-bottom: 1px solid var(--border-2);
+    }
+    #tabela-dados tbody tr:hover { background: var(--bg-3); }
+    #tabela-dados .num { font-family: var(--mono); text-align: right; }
+    #tabela-dados .cod { font-family: var(--mono); color: var(--green); }
+    #tabela-dados .nome { font-weight: 500; }
+
+    .dt-layout-row { margin: 0 !important; padding: 0 !important; }
+    .dt-container .dt-layout-row.dt-layout-table .dt-layout-cell { padding: 0 !important; }
+    .dt-container { padding: 0 !important; }
+    .dt-info {
+      font-family: var(--mono); font-size: 11px; color: var(--text-3) !important;
+      padding: .75rem 1rem !important;
+    }
+    .dt-paging { padding: .75rem 1rem !important; }
+    .dt-paging a {
+      font-family: var(--mono); font-size: 12px; color: var(--text-2) !important;
+      background: var(--bg-3) !important; border: 1px solid var(--border) !important;
+      border-radius: 4px !important; padding: 4px 10px !important; margin: 0 2px !important;
+    }
+    .dt-paging a:hover { color: var(--text) !important; border-color: var(--text-3) !important; }
+    .dt-paging .current {
+      color: var(--green) !important; background: var(--green-bg) !important;
+      border-color: rgba(63,185,80,.4) !important;
+    }
+    .dt-search {
+      padding: .75rem 1rem !important;
+    }
+    .dt-search label {
+      font-family: var(--mono); font-size: 11px; color: var(--text-3); display: flex; align-items: center; gap: 6px;
+    }
+    .dt-search input {
+      font-family: var(--mono); font-size: 12px; color: var(--text);
+      background: var(--bg-3); border: 1px solid var(--border);
+      border-radius: 4px; padding: 4px 8px;
+    }
+    .dt-search input:focus { outline: none; border-color: var(--green); }
+
+    footer {
+      border-top: 1px solid var(--border); background: var(--bg-2);
+      padding: 1.5rem 24px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-l { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+    .footer-l a { color: var(--text-2); }
+    .footer-l a:hover { color: var(--green); }
+    .footer-links { display: flex; gap: 1.25rem; list-style: none; }
+    .footer-links a { font-size: 12px; color: var(--text-3); }
+    .footer-links a:hover { color: var(--green); text-decoration: none; }
+
+    .stats-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 1rem 1.25rem; text-align: center;
+    }
+    .stat-card .v {
+      display: block; font-family: var(--mono); font-size: 1.25rem; font-weight: 600;
+      color: var(--green); letter-spacing: -.02em;
+    }
+    .stat-card .l {
+      font-size: 10px; color: var(--text-3); text-transform: uppercase;
+      letter-spacing: .07em; margin-top: 2px;
+    }
+
+    .loading {
+      text-align: center; padding: 3rem; color: var(--text-3);
+      font-family: var(--mono); font-size: 13px;
+    }
+    .loading .spinner {
+      display: inline-block; width: 24px; height: 24px;
+      border: 2px solid var(--border); border-top-color: var(--green);
+      border-radius: 50%; animation: sp .8s linear infinite; margin-bottom: .75rem;
+    }
+    @keyframes sp { to { transform: rotate(360deg); } }
+    .error-box {
+      background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.3);
+      border-radius: 8px; padding: 1.5rem; text-align: center; color: var(--red);
+      font-family: var(--mono); font-size: 13px;
+    }
+    .warning-box {
+      background: var(--warn-bg); border: 1px solid rgba(210,153,34,.3);
+      border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+      color: var(--warn); font-size: 13px;
+    }
+
+    @media (max-width:720px) {
+      .nav-links { display: none; }
+      .container { padding: 1rem 12px; }
+      .filters { flex-direction: column; }
+      .filter-group, .filter-group-wide, .filter-group-narrow, .filter-group-short { min-width: 100% !important; flex: 1 1 auto !important; }
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="logo-icon">
+      <svg viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L2 6.5H18L10 2Z" fill="rgba(255,255,255,0.9)"/>
+        <rect x="2" y="15.5" width="16" height="2" rx=".5" fill="rgba(255,255,255,0.9)"/>
+        <rect x="4" y="8" width="5" height="6" rx=".5" fill="rgba(255,255,255,0.75)"/>
+        <rect x="11" y="8" width="5" height="6" rx=".5" fill="rgba(255,255,255,0.75)"/>
+        <line x1="6.5" y1="5.5" x2="6.5" y2="13.5" stroke="#3fb950" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="13.5" y1="5.5" x2="13.5" y2="13.5" stroke="#3fb950" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </span>
+    PulseSINAPI
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="consulta.html" class="active">Consulta</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="https://github.com/PulseDataLabs/PulseSINAPI" target="_blank" rel="noopener" style="font-size:12px;color:var(--text-3)">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-title">
+    <h1>Consulta <span class="accent">SINAPI</span></h1>
+    <p>Pesquise preços de insumos, materiais, mão de obra e coeficientes de composições da base Caixa</p>
+  </div>
+
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card"><span class="v" id="st-registros">—</span><span class="l">Registros</span></div>
+    <div class="stat-card"><span class="v" id="st-ufs">—</span><span class="l">Estados (UFs)</span></div>
+    <div class="stat-card"><span class="v" id="st-periodos">—</span><span class="l">Períodos</span></div>
+    <div class="stat-card"><span class="v" id="st-preco-medio">—</span><span class="l">Preço Médio</span></div>
+  </div>
+
+  <div class="warning-box">
+    Dados carregados a partir dos arquivos CSV flat locais/GitHub Raw — use os filtros abaixo para refinar os registros mostrados.
+  </div>
+
+  <div class="filters">
+    <div class="filter-group filter-group-wide">
+      <label>Dataset</label>
+      <select id="filtro-dataset" onchange="alterarCamposDataset()">
+        <option value="insumos">Insumos (Preços de Materiais e Mão de Obra)</option>
+        <option value="composicoes">Composições (Detalhe e Coeficientes)</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Texto de Busca (Código ou Descrição)</label>
+      <input type="text" id="filtro-busca" placeholder="Ex: Areia, Cimento, Pedreiro, 00001379..." />
+    </div>
+    <div class="filter-group filter-group-narrow" id="div-filtro-uf">
+      <label>UF (Estado)</label>
+      <select id="filtro-uf">
+        <option value="">Todos</option>
+        <option value="AC">AC</option>
+        <option value="AL">AL</option>
+        <option value="AM">AM</option>
+        <option value="AP">AP</option>
+        <option value="BA">BA</option>
+        <option value="CE">CE</option>
+        <option value="DF">DF</option>
+        <option value="ES">ES</option>
+        <option value="GO">GO</option>
+        <option value="MA">MA</option>
+        <option value="MG">MG</option>
+        <option value="MS">MS</option>
+        <option value="MT">MT</option>
+        <option value="PA">PA</option>
+        <option value="PB">PB</option>
+        <option value="PE">PE</option>
+        <option value="PI">PI</option>
+        <option value="PR">PR</option>
+        <option value="RJ">RJ</option>
+        <option value="RN">RN</option>
+        <option value="RO">RO</option>
+        <option value="RR">RR</option>
+        <option value="RS">RS</option>
+        <option value="SC">SC</option>
+        <option value="SE">SE</option>
+        <option value="SP">SP</option>
+        <option value="TO">TO</option>
+      </select>
+    </div>
+    <div class="filter-group filter-group-short" id="div-filtro-periodo">
+      <label>Período (YYYY-MM)</label>
+      <input type="text" id="filtro-periodo" placeholder="Ex: 2024-12" maxlength="7" />
+    </div>
+    <div class="filter-group filter-group-narrow" id="div-filtro-desonerado">
+      <label>Desonerado</label>
+      <select id="filtro-desonerado">
+        <option value="">Todos</option>
+        <option value="true">Sim</option>
+        <option value="false">Não</option>
+      </select>
+    </div>
+    <div class="filter-actions">
+      <button class="btn btn-primary" onclick="carregarDados()">Carregar</button>
+      <button class="btn btn-outline" onclick="limparFiltros()">Limpar</button>
+    </div>
+  </div>
+
+  <div id="tabela-container">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>Aguardando parâmetros…</div>
+      <div style="font-size:11px;margin-top:6px;color:var(--text-3)">Selecione um dataset e clique em "Carregar"</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-l">
+    <span>© 2026 <a href="https://pulsedatalabs.github.io">PulseDataLabs</a></span>
+    <span style="color:var(--border)">·</span>
+    <span>Dados públicos do <a href="https://www.caixa.gov.br/" target="_blank" rel="noopener">SINAPI/Caixa</a> — ODbL · Código MIT</span>
+  </div>
+  <ul class="footer-links">
+    <li><a href="https://pulsedatalabs.github.io/PulseFlat/">PulseFlat</a></li>
+    <li><a href="https://pulsedatalabs.github.io/PulseIFData/">PulseIFData</a></li>
+    <li><a href="https://github.com/PulseDataLabs/PulseSINAPI" target="_blank" rel="noopener">GitHub</a></li>
+  </ul>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/select/3.1.3/js/dataTables.select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<script>
+const BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? './' 
+  : 'https://raw.githubusercontent.com/PulseDataLabs/PulseSINAPI/main/';
+
+const DATASETS = {
+  'insumos':     { url: BASE + 'data/sinapi_insumos.csv', label: 'Insumos e Preços' },
+  'composicoes': { url: BASE + 'data/sinapi_composicoes.csv', label: 'Composições' },
+};
+
+let dt = null;
+let dadosBrutos = [];
+
+function limparFiltros() {
+  document.getElementById('filtro-busca').value = '';
+  document.getElementById('filtro-uf').value = '';
+  document.getElementById('filtro-periodo').value = '';
+  document.getElementById('filtro-desonerado').value = '';
+  if (dt) dt.search('').columns().search('').draw();
+}
+
+function alterarCamposDataset() {
+  const key = document.getElementById('filtro-dataset').value;
+  const divUf = document.getElementById('div-filtro-uf');
+  const divPeriodo = document.getElementById('div-filtro-periodo');
+  const divDesonerado = document.getElementById('div-filtro-desonerado');
+  
+  if (key === 'composicoes') {
+    divUf.style.display = 'none';
+    divPeriodo.style.display = 'none';
+    divDesonerado.style.display = 'none';
+  } else {
+    divUf.style.display = 'block';
+    divPeriodo.style.display = 'block';
+    divDesonerado.style.display = 'block';
+  }
+}
+
+function getColDefs(key) {
+  const defs = {
+    'insumos': [
+      { data: 'codigo_insumo', title: 'Código' },
+      { data: 'descricao_insumo', title: 'Descrição Insumo' },
+      { data: 'unidade', title: 'Unidade' },
+      { data: 'preco_mediano', title: 'Preço (R$)', render: v => v ? parseFloat(v).toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2}) : '-' },
+      { data: 'uf', title: 'UF' },
+      { data: 'data_referencia', title: 'Período' },
+      { data: 'desonerado', title: 'Desonerado', render: v => String(v).toLowerCase() === 'true' ? 'Sim' : 'Não' }
+    ],
+    'composicoes': [
+      { data: 'codigo_composicao', title: 'Cód Comp' },
+      { data: 'descricao_composicao', title: 'Descrição Composição' },
+      { data: 'unidade_composicao', title: 'Unidade' },
+      { data: 'codigo_item', title: 'Cód Item' },
+      { data: 'descricao_item', title: 'Descrição Item' },
+      { data: 'unidade_item', title: 'Unid Item' },
+      { data: 'tipo_item', title: 'Tipo' },
+      { data: 'coeficiente', title: 'Coeficiente', render: v => v ? parseFloat(v).toLocaleString('pt-BR',{minimumFractionDigits:4}) : '-' }
+    ]
+  };
+  return defs[key] || [];
+}
+
+function atualizarStats(data, key) {
+  const ufs = new Set();
+  const periodos = new Set();
+  let somaPrecos = 0;
+  let precosCount = 0;
+
+  data.forEach(r => {
+    if (r.uf) ufs.add(r.uf.toUpperCase());
+    if (r.data_referencia) periodos.add(r.data_referencia);
+    if (r.preco_mediano) {
+      const p = parseFloat(r.preco_mediano);
+      if (!isNaN(p)) {
+        somaPrecos += p;
+        precosCount++;
+      }
+    }
+  });
+
+  document.getElementById('st-registros').textContent = data.length.toLocaleString('pt-BR');
+  document.getElementById('st-ufs').textContent = ufs.size > 0 ? ufs.size.toLocaleString('pt-BR') : '—';
+  document.getElementById('st-periodos').textContent = periodos.size > 0 ? periodos.size.toLocaleString('pt-BR') : '—';
+
+  const avg = precosCount > 0 ? (somaPrecos / precosCount) : 0;
+  document.getElementById('st-preco-medio').textContent = avg > 0 
+    ? 'R$ ' + avg.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) 
+    : '—';
+}
+
+function carregarDados() {
+  const key = document.getElementById('filtro-dataset').value;
+  const dataset = DATASETS[key];
+  if (!dataset) return;
+
+  const container = document.getElementById('tabela-container');
+  container.innerHTML = `<div class="loading"><div class="spinner"></div><div>Carregando ${dataset.label}…</div></div>`;
+
+  if (dt) { dt.destroy(); dt = null; }
+
+  $.get(dataset.url + '?t=' + Date.now(), function(csvText) {
+    Papa.parse(csvText, {
+      header: true,
+      dynamicTyping: false,
+      skipEmptyLines: true,
+      complete: function(results) {
+        dadosBrutos = results.data.filter(r => {
+          return Object.values(r).some(v => v !== null && v !== '');
+        });
+        if (dadosBrutos.length === 0) {
+          container.innerHTML = '<div class="error-box">Nenhum dado encontrado. O arquivo CSV pode estar vazio.</div>';
+          return;
+        }
+
+        const buscaFilter = document.getElementById('filtro-busca').value.trim().toLowerCase();
+        
+        let filtered = dadosBrutos;
+
+        // Apply textual search across multiple fields
+        if (buscaFilter) {
+          if (key === 'insumos') {
+            filtered = filtered.filter(r =>
+              (r.descricao_insumo || '').toLowerCase().includes(buscaFilter) ||
+              (r.codigo_insumo || '').includes(buscaFilter)
+            );
+          } else {
+            filtered = filtered.filter(r =>
+              (r.descricao_composicao || '').toLowerCase().includes(buscaFilter) ||
+              (r.codigo_composicao || '').includes(buscaFilter) ||
+              (r.descricao_item || '').toLowerCase().includes(buscaFilter) ||
+              (r.codigo_item || '').includes(buscaFilter)
+            );
+          }
+        }
+
+        // Apply contextual filters if dataset is insumos
+        if (key === 'insumos') {
+          const ufFilter = document.getElementById('filtro-uf').value;
+          const perFilter = document.getElementById('filtro-periodo').value.trim();
+          const desFilter = document.getElementById('filtro-desonerado').value;
+
+          if (ufFilter) {
+            filtered = filtered.filter(r => (r.uf || '').toUpperCase() === ufFilter.toUpperCase());
+          }
+          if (perFilter) {
+            filtered = filtered.filter(r => (r.data_referencia || '').includes(perFilter));
+          }
+          if (desFilter) {
+            filtered = filtered.filter(r => String(r.desonerado).toLowerCase() === desFilter.toLowerCase());
+          }
+        }
+
+        atualizarStats(filtered, key);
+        const colDefs = getColDefs(key);
+
+        container.innerHTML = '<div class="table-wrap"><table id="tabela-dados" class="display nowrap" style="width:100%"></table></div>';
+
+        dt = new DataTable('#tabela-dados', {
+          data: filtered,
+          columns: colDefs,
+          pageLength: 50,
+          lengthMenu: [[25, 50, 100, 250, -1], [25, 50, 100, 250, 'Todos']],
+          order: [],
+          scrollX: true,
+          language: {
+            url: 'https://cdn.datatables.net/plug-ins/2.2.2/i18n/pt-BR.json',
+            search: 'Filtro Rápido:',
+            lengthMenu: '_MENU_ por página',
+            info: '_START_–_END_ de _TOTAL_ registros',
+            infoEmpty: '0 registros',
+            infoFiltered: '(filtrado de _MAX_ registros)',
+          },
+          createdRow: function(row, data) {
+            $(row).find('td:eq(0)').addClass('cod');
+          }
+        });
+      },
+      error: function(err) {
+        container.innerHTML = `<div class="error-box">Erro ao analisar o CSV: ${err}</div>`;
+      }
+    });
+  }).fail(function(jqXHR, textStatus, err) {
+    container.innerHTML = `<div class="error-box">Erro HTTP ao carregar tabela: ${textStatus}${err ? ' — ' + err : ''}</div>`;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('filtro-busca').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') carregarDados();
+  });
+  if (document.getElementById('filtro-periodo')) {
+    document.getElementById('filtro-periodo').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') carregarDados();
+    });
+  }
+  carregarDados();
+});
+</script>
+</body>
+</html>
