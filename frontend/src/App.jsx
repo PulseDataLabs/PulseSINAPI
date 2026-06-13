@@ -164,9 +164,31 @@ export default function App() {
           </button>
         </div>
         
-        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', gap: '1rem', fontFamily: 'var(--font-mono)' }}>
-          <span>Insumos: <strong>{dbSummary.total_insumos}</strong></span>
-          <span>Composições: <strong>{dbSummary.total_composicoes}</strong></span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', gap: '1rem', fontFamily: 'var(--font-mono)' }}>
+            <span>Insumos: <strong>{dbSummary.total_insumos}</strong></span>
+            <span>Composições: <strong>{dbSummary.total_composicoes}</strong></span>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.25rem' }}>
+            <a 
+              href="https://pulsedatalabs.github.io/PulseSINAPI/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="tab-button"
+              style={{ fontSize: '0.85rem', padding: 0, border: 'none' }}
+            >
+              Portal ↗
+            </a>
+            <a 
+              href="https://github.com/PulseDataLabs/PulseSINAPI" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="tab-button"
+              style={{ fontSize: '0.85rem', padding: 0, border: 'none', color: 'var(--accent-primary)' }}
+            >
+              GitHub ↗
+            </a>
+          </div>
         </div>
       </nav>
 
