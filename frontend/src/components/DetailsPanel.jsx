@@ -10,8 +10,8 @@ export default function DetailsPanel({ code, type, uf, month, desonerado, onClos
   useEffect(() => {
     setLoading(true);
     const endpoint = type === 'INSUMO' 
-      ? `http://localhost:8000/api/insumos/${code}`
-      : `http://localhost:8000/api/composicoes/${code}`;
+      ? `/api/insumos/${code}`
+      : `/api/composicoes/${code}`;
 
     axios.get(endpoint, {
       params: { uf, month, desonerado }

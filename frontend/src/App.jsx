@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Sun, Moon, Database, LayoutDashboard, Construction, Hammer, Receipt } from 'lucide-react';
+import { Sun, Moon, Database, LayoutDashboard, Construction, Hammer, Receipt, Layers } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import InsumosTable from './components/InsumosTable';
 import ComposicoesTable from './components/ComposicoesTable';
 import BudgetBuilder from './components/BudgetBuilder';
+import UfCompareDashboard from './components/UfCompareDashboard';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -22,7 +23,7 @@ export default function App() {
 
   // Fetch db configuration on load
   useEffect(() => {
-    axios.get('http://localhost:8000/api/summary')
+    axios.get('/api/summary')
       .then(res => {
         setAvailableUfs(res.data.ufs);
         setAvailableMonths(res.data.months);
@@ -148,6 +149,13 @@ export default function App() {
             Composições
           </button>
           <button 
+            className={`tab-button ${activeTab === 'comparador' ? 'active' : ''}`}
+            onClick={() => setActiveTab('comparador')}
+          >
+            <Layers size={18} />
+            Comparador Regional
+          </button>
+          <button 
             className={`tab-button ${activeTab === 'budget' ? 'active' : ''}`}
             onClick={() => setActiveTab('budget')}
           >
@@ -184,6 +192,9 @@ export default function App() {
             month={selectedMonth} 
             desonerado={desonerado} 
           />
+        )}
+        {activeTab === 'comparador' && (
+          <UfCompareDashboard />
         )}
         {activeTab === 'budget' && (
           <BudgetBuilder 

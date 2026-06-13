@@ -23,10 +23,10 @@ export default function Dashboard({ uf, month, desonerado }) {
     const fetchKPIs = async () => {
       try {
         const [masonRes, cementRes, steelRes, concreteRes] = await Promise.all([
-          axios.get(`http://localhost:8000/api/insumos/00000088?uf=${uf}&month=${month}&desonerado=${desonerado}`),
-          axios.get(`http://localhost:8000/api/insumos/00001379?uf=${uf}&month=${month}&desonerado=${desonerado}`),
-          axios.get(`http://localhost:8000/api/insumos/00000114?uf=${uf}&month=${month}&desonerado=${desonerado}`),
-          axios.get(`http://localhost:8000/api/composicoes/00088316?uf=${uf}&month=${month}&desonerado=${desonerado}`)
+          axios.get(`/api/insumos/00000088?uf=${uf}&month=${month}&desonerado=${desonerado}`),
+          axios.get(`/api/insumos/00001379?uf=${uf}&month=${month}&desonerado=${desonerado}`),
+          axios.get(`/api/insumos/00000114?uf=${uf}&month=${month}&desonerado=${desonerado}`),
+          axios.get(`/api/composicoes/00088316?uf=${uf}&month=${month}&desonerado=${desonerado}`)
         ]);
 
         setKpis({
@@ -49,7 +49,7 @@ export default function Dashboard({ uf, month, desonerado }) {
         const ufs = ['SP', 'RJ', 'MG', 'AC'];
         const comparisons = await Promise.all(
           ufs.map(async (state) => {
-            const res = await axios.get(`http://localhost:8000/api/composicoes/00088316?uf=${state}&month=${month}&desonerado=${desonerado}`);
+            const res = await axios.get(`/api/composicoes/00088316?uf=${state}&month=${month}&desonerado=${desonerado}`);
             return { uf: state, cost: res.data.preco };
           })
         );

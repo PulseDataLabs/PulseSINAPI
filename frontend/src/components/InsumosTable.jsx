@@ -15,7 +15,7 @@ export default function InsumosTable({ uf, month, desonerado }) {
 
   const fetchInsumos = () => {
     setLoading(true);
-    axios.get(`http://localhost:8000/api/insumos`, {
+    axios.get(`/api/insumos`, {
       params: {
         q: searchQuery,
         uf: uf,

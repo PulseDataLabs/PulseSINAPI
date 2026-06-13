@@ -1,6 +1,8 @@
 import uvicorn
+import os
 from fastapi import FastAPI, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional
 from sqlalchemy.orm import Session
@@ -282,6 +284,82 @@ def calculate_budget(input_data: BudgetCalculationInput, db: Session = Depends(g
         "month": input_data.month,
         "desonerado": input_data.desonerado
     }
+
+@app.get("/api/insumos/{code}/compare")
+def compare_insumo_ufs(
+    code: str,
+    ufs: str = Query(..., description="Comma-separated UFs, e.g., SP,RJ,AC,MG"),
+    desonerado: bool = True,
+    db: Session = Depends(get_db)
+):
+    insumo = db.query(Insumo).filter_by(codigo=code).first()
+    if not insumo:
+        raise HTTPException(status_code=404, detail="Insumo não encontrado")
+        
+    uf_list = [uf.strip().upper() for uf in ufs.split(",") if uf.strip()]
+    if not uf_list:
+        raise HTTPException(status_code=400, detail="Pelo menos uma UF deve ser informada")
+        
+    records = db.query(PrecoInsumo).filter(
+        PrecoInsumo.insumo_codigo == code,
+        PrecoInsumo.uf.in_(uf_list),
+        PrecoInsumo.desonerado == desonerado
+    ).order_by(PrecoInsumo.data_referencia).all()
+    
+    # Structure output by UF
+    comparisons = {uf: [] for uf in uf_list}
+    for r in records:
+        comparisons[r.uf].append({
+            "data_referencia": r.data_referencia,
+            "preco": r.preco
+        })
+        
+    return {
+        "codigo": insumo.codigo,
+        "descricao": insumo.descricao,
+        "unidade": insumo.unidade,
+        "comparisons": comparisons
+    }
+
+@app.get("/api/composicoes/{code}/compare")
+def compare_composition_ufs(
+    code: str,
+    ufs: str = Query(..., description="Comma-separated UFs, e.g., SP,RJ,AC,MG"),
+    desonerado: bool = True,
+    db: Session = Depends(get_db)
+):
+    comp = db.query(Composicao).filter_by(codigo=code).first()
+    if not comp:
+        raise HTTPException(status_code=404, detail="Composição não encontrada")
+        
+    uf_list = [uf.strip().upper() for uf in ufs.split(",") if uf.strip()]
+    if not uf_list:
+        raise HTTPException(status_code=400, detail="Pelo menos uma UF deve ser informada")
+        
+    # Get all reference months
+    months_records = db.query(PrecoInsumo.data_referencia).distinct().order_by(PrecoInsumo.data_referencia).all()
+    months = [r[0] for r in months_records]
+    
+    comparisons = {uf: [] for uf in uf_list}
+    for uf in uf_list:
+        for month in months:
+            cost = get_composition_cost(db, code, uf, month, desonerado)
+            comparisons[uf].append({
+                "data_referencia": month,
+                "preco": round(cost, 2)
+            })
+            
+    return {
+        "codigo": comp.codigo,
+        "descricao": comp.descricao,
+        "unidade": comp.unidade,
+        "comparisons": comparisons
+    }
+
+# Serve React SPA Frontend static files
+frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
+if os.path.exists(frontend_dist):
+    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
 
 if __name__ == "__main__":
     uvicorn.run("backend.app:app", host="0.0.0.0", port=8000, reload=True)

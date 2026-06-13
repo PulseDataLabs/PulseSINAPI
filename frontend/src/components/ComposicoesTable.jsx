@@ -15,7 +15,7 @@ export default function ComposicoesTable({ uf, month, desonerado }) {
 
   const fetchComposicoes = () => {
     setLoading(true);
-    axios.get(`http://localhost:8000/api/composicoes`, {
+    axios.get(`/api/composicoes`, {
       params: {
         q: searchQuery,
         uf: uf,

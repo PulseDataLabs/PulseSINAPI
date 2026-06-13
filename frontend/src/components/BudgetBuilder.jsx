@@ -31,7 +31,7 @@ export default function BudgetBuilder({ uf, month, desonerado }) {
     }
 
     setLoading(true);
-    axios.post('http://localhost:8000/api/budget', {
+    axios.post('/api/budget', {
       items: budgetItems,
       uf: uf,
       month: month,
@@ -56,7 +56,7 @@ export default function BudgetBuilder({ uf, month, desonerado }) {
     }
 
     const endpoint = addItemType === 'INSUMO' ? 'insumos' : 'composicoes';
-    axios.get(`http://localhost:8000/api/${endpoint}`, {
+    axios.get(`/api/${endpoint}`, {
       params: {
         q: searchQuery,
         uf: uf,
