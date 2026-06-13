@@ -52,8 +52,26 @@ export default function App() {
       {/* Top Header */}
       <header className="dashboard-header">
         <div className="title-section">
-          <h1>
-            <Database size={32} color="var(--accent-primary)" />
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: 'var(--success)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <svg viewBox="0 0 20 20" fill="none" style={{ width: '20px', height: '20px' }}>
+                <path d="M10 2L2 6.5H18L10 2Z" fill="rgba(255,255,255,0.9)"/>
+                <rect x="2" y="15.5" width="16" height="2" rx=".5" fill="rgba(255,255,255,0.9)"/>
+                <rect x="4" y="8" width="5" height="6" rx=".5" fill="rgba(255,255,255,0.75)"/>
+                <rect x="11" y="8" width="5" height="6" rx=".5" fill="rgba(255,255,255,0.75)"/>
+                <line x1="6.5" y1="5.5" x2="6.5" y2="13.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="13.5" y1="5.5" x2="13.5" y2="13.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </span>
             PulseSINAPI
           </h1>
           <p>Explorer &amp; Orçamentador da Construção Civil — PulseDataLabs</p>
@@ -226,6 +244,25 @@ export default function App() {
           />
         )}
       </main>
+
+      <hr style={{ borderColor: 'var(--border-color)', margin: '3rem 0 1.5rem 0' }} />
+
+      <footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingBottom: '2.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+        <div>
+          <span>© 2026 <a href="https://pulsedatalabs.github.io" target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>PulseDataLabs</a></span>
+          <span style={{ margin: '0 0.5rem', color: 'var(--border-color)' }}>·</span>
+          <span>Dados públicos do <a href="https://www.caixa.gov.br/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)' }}>SINAPI/Caixa</a></span>
+          <span style={{ margin: '0 0.5rem', color: 'var(--border-color)' }}>·</span>
+          <span>Licença MIT</span>
+        </div>
+        <div style={{ display: 'flex', gap: '1.25rem' }}>
+          <a href="https://pulsedatalabs.github.io" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>A Empresa</a>
+          <a href="https://pulsedatalabs.github.io/PulseFlat/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)' }}>PulseFlat</a>
+          <a href="https://pulsedatalabs.github.io/PulseIFData/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)' }}>PulseIFData</a>
+          <a href="https://pulsedatalabs.github.io/PulseSICRO/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)' }}>PulseSICRO</a>
+          <a href="https://github.com/PulseDataLabs/PulseSINAPI/issues" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Contato/Suporte</a>
+        </div>
+      </footer>
     </div>
   );
 }
