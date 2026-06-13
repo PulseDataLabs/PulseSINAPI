@@ -2,6 +2,8 @@
 
 **Inteligência em Custos da Construção Civil** — dados do SINAPI (Caixa Econômica Federal) coletados, estruturados, normalizados e entregues para uso institucional.
 
+🚀 **Acesse a aplicação em Produção no Google Cloud Run:** [https://pulsesinapi-343139607879.southamerica-east1.run.app/](https://pulsesinapi-343139607879.southamerica-east1.run.app/)
+
 [![Coleta e Sincronizacao SINAPI](https://github.com/PulseDataLabs/PulseSINAPI/actions/workflows/main.yml/badge.svg)](https://github.com/PulseDataLabs/PulseSINAPI/actions/workflows/main.yml)
 
 ---
