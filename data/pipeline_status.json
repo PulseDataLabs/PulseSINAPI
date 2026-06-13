@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-13T09:50:56.312291",
-  "elapsed_seconds": 14.807747602462769,
+  "timestamp": "2026-06-13T10:04:38.694054",
+  "elapsed_seconds": 2.271516799926758,
   "status": "success",
   "summary": {
     "total": 2,
@@ -11,15 +11,15 @@
   "scrapers": {
     "sinapi_composicoes": {
       "status": "success",
-      "elapsed_seconds": 14.238908767700195,
+      "elapsed_seconds": 2.268781900405884,
       "error": null,
-      "timestamp": "2026-06-13T09:50:56.312359"
+      "timestamp": "2026-06-13T10:04:38.694123"
     },
     "sinapi_insumos": {
       "status": "success",
-      "elapsed_seconds": 14.806835889816284,
+      "elapsed_seconds": 2.270627975463867,
       "error": null,
-      "timestamp": "2026-06-13T09:50:56.312359"
+      "timestamp": "2026-06-13T10:04:38.694123"
     }
   },
   "drifts": {}
