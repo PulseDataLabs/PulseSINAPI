@@ -10,13 +10,13 @@ data_captura,codigo_composicao,descricao_composicao,unidade_composicao,codigo_it
 2026-06-12,00095320,"Revestimento ceramico para pisos com placas esmaltadas premium, assentado com argamassa colante ac-i",M2,00001382,Argamassa colante ac-i para assentamento de placas ceramicas,KG,INSUMO,5.0
 2026-06-12,00095320,"Revestimento ceramico para pisos com placas esmaltadas premium, assentado com argamassa colante ac-i",M2,00000088,Pedreiro (horista),H,INSUMO,1.2
 2026-06-12,00095320,"Revestimento ceramico para pisos com placas esmaltadas premium, assentado com argamassa colante ac-i",M2,00006111,Servente de pedreiro (horista),H,INSUMO,0.6
-2026-07-04,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00001379,Cimento portland composto cp ii-32,KG,INSUMO,350.0
-2026-07-04,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,INSUMO,0.65
-2026-07-04,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00004721,"Pedra britada n. 1 (9,5 a 19 mm) posto pedreira/fornecedor, sem frete",M3,INSUMO,0.75
-2026-07-04,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00000088,Pedreiro (horista),H,INSUMO,2.5
-2026-07-04,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00006111,Servente de pedreiro (horista),H,INSUMO,6.0
-2026-07-04,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00007258,Tijolo ceramico macico comum *5 x 10 x 20* cm (l x a x c),MIL,INSUMO,0.08
-2026-07-04,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00001379,Cimento portland composto cp ii-32,KG,INSUMO,12.0
-2026-07-04,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,INSUMO,0.04
-2026-07-04,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00000088,Pedreiro (horista),H,INSUMO,1.8
-2026-07-04,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00006111,Servente de pedreiro (horista),H,INSUMO,1.2
+2026-07-05,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00001379,Cimento portland composto cp ii-32,KG,INSUMO,350.0
+2026-07-05,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,INSUMO,0.65
+2026-07-05,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00004721,"Pedra britada n. 1 (9,5 a 19 mm) posto pedreira/fornecedor, sem frete",M3,INSUMO,0.75
+2026-07-05,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00000088,Pedreiro (horista),H,INSUMO,2.5
+2026-07-05,00088316,"Concreto fck = 25 mpa, preparado mecanicamente, lancado e adensado em pilares",M3,00006111,Servente de pedreiro (horista),H,INSUMO,6.0
+2026-07-05,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00007258,Tijolo ceramico macico comum *5 x 10 x 20* cm (l x a x c),MIL,INSUMO,0.08
+2026-07-05,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00001379,Cimento portland composto cp ii-32,KG,INSUMO,12.0
+2026-07-05,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,INSUMO,0.04
+2026-07-05,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00000088,Pedreiro (horista),H,INSUMO,1.8
+2026-07-05,00089123,"Alvenaria de vedacao com tijolo ceramico macico comum, espessura 10 cm, assentado com argamassa",M2,00006111,Servente de pedreiro (horista),H,INSUMO,1.2
