@@ -5727,13 +5727,13 @@ data_captura,codigo_insumo,descricao_insumo,unidade,preco_mediano,uf,data_refere
 2026-06-12,00000246,Eletricista (horista),H,20.54,TO,2022-12,True
 2026-06-12,00000247,Encanador (horista),H,19.85,TO,2022-12,True
 2026-06-12,00004012,Carpinteiro de formas (horista),H,20.26,TO,2022-12,True
-2026-07-13,00001379,Cimento portland composto cp ii-32,KG,0.75,SP,2026-04,True
-2026-07-13,00001379,Cimento portland composto cp ii-32,KG,0.88,AC,2026-04,True
-2026-07-13,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,90.0,SP,2026-04,True
-2026-07-13,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,105.0,AC,2026-04,True
-2026-07-13,00004721,"Pedra britada n. 1 (9,5 a 19 mm) posto pedreira/fornecedor, sem frete",M3,80.0,SP,2026-04,True
-2026-07-13,00000114,"Aco ca-50, 10,0 mm, ou ca-60, linear, vergalhao",KG,8.5,SP,2026-04,True
-2026-07-13,00007258,Tijolo ceramico macico comum *5 x 10 x 20* cm (l x a x c),MIL,650.0,SP,2026-04,True
-2026-07-13,00000088,Pedreiro (horista),H,25.0,SP,2026-04,True
-2026-07-13,00000088,Pedreiro (horista),H,29.5,AC,2026-04,True
-2026-07-13,00006111,Servente de pedreiro (horista),H,18.0,SP,2026-04,True
+2026-07-14,00001379,Cimento portland composto cp ii-32,KG,0.75,SP,2026-04,True
+2026-07-14,00001379,Cimento portland composto cp ii-32,KG,0.88,AC,2026-04,True
+2026-07-14,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,90.0,SP,2026-04,True
+2026-07-14,00000370,"Areia media - posto jazida/fornecedor (retirado na jazida, sem transporte)",M3,105.0,AC,2026-04,True
+2026-07-14,00004721,"Pedra britada n. 1 (9,5 a 19 mm) posto pedreira/fornecedor, sem frete",M3,80.0,SP,2026-04,True
+2026-07-14,00000114,"Aco ca-50, 10,0 mm, ou ca-60, linear, vergalhao",KG,8.5,SP,2026-04,True
+2026-07-14,00007258,Tijolo ceramico macico comum *5 x 10 x 20* cm (l x a x c),MIL,650.0,SP,2026-04,True
+2026-07-14,00000088,Pedreiro (horista),H,25.0,SP,2026-04,True
+2026-07-14,00000088,Pedreiro (horista),H,29.5,AC,2026-04,True
+2026-07-14,00006111,Servente de pedreiro (horista),H,18.0,SP,2026-04,True
