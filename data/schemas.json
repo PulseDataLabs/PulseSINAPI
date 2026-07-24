@@ -1,7 +1,7 @@
 [
   {
-    "title": "Sinapi Insumos",
-    "files": "sinapi_insumos.csv",
+    "title": "Sinapi Composicoes",
+    "files": "sinapi_composicoes.csv",
     "source": "sinapi",
     "fields": [
       {
@@ -10,43 +10,37 @@
         "example": "2026-06-12"
       },
       {
-        "name": "codigo_insumo",
+        "name": "codigo_composicao",
         "type": "str",
-        "example": "00001379"
+        "example": "00092210"
       },
       {
-        "name": "descricao_insumo",
+        "name": "descricao_composicao",
         "type": "str",
-        "example": "Cimento portland composto cp ii-32"
+        "example": "Pintura acrilica em paredes internas, duas demaos"
       },
       {
-        "name": "unidade",
+        "name": "unidade_composicao",
         "type": "str",
-        "example": "KG"
+        "example": "M2"
       },
       {
-        "name": "preco_mediano",
-        "type": "float",
-        "example": "0.75"
-      },
-      {
-        "name": "uf",
+        "name": "codigo_item",
         "type": "str",
-        "example": "SP"
+        "example": "00001287"
       },
       {
-        "name": "data_referencia",
-        "type": "date",
-        "example": "2026-01"
-      },
-      {
-        "name": "desonerado",
+        "name": "descricao_item",
         "type": "str",
-        "example": "True"
-      }
-    ]
-  }
-]ame": "tipo_item",
+        "example": "Tinta latex acrilica premium, cor branco fosco"
+      },
+      {
+        "name": "unidade_item",
+        "type": "str",
+        "example": "L"
+      },
+      {
+        "name": "tipo_item",
         "type": "str",
         "example": "INSUMO"
       },
